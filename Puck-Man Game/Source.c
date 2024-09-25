@@ -97,20 +97,23 @@ void main()
 	Character enemy2 = { 20,8,"▽" };
 	Character enemy3 = { 20,10,"◁" };
 	Character enemy4 = { 20,11,"▷" };
-	
-	Character enemys[4] =
-	{
-		enemy1, enemy2, enemy3, enemy4
-	};
 
+	Character* enemys[] = { &enemy1,&enemy2, &enemy3, &enemy4 };
+	enemys[0]->x -= 2;
+
+	int coins = 0; // 플레이어가 먹은 코인의 개수
+	
+	
+	
 	char key = 0;
 	// 방향 (시계방향으로 12시부터 1,2,3,4)
 	int dir = 0;
 
-	Render();
+	 Render();
 
-	while (1)
+	 while (1)
 	{
+		
 		// 플레이어 움직이기 코드
 		{
 			if (_kbhit())
@@ -146,30 +149,45 @@ void main()
 
 			}
 		}
+		
 		// 적 움직이기 코드
 		{
-			int size = sizeof(enemys) / sizeof(Character);
+			srand(time(NULL));
+			// int size = sizeof(enemys) / sizeof(Character); 값 이상함
 			for (int i = 0; i < 4; i++)
 			{
-				srand(time(NULL));
-				int randomDir = rand() % 4 + 1;
-				// 키 입력 받기
-				switch (randomDir)
-				{
-				case 1: if (maze[enemys[i].y - 1][enemys[i].x / 2] != '1') enemys[i].y--; break;
-					break;
-				case 2:if (maze[enemys[i].y][enemys[i].x / 2 + 1] != '1') enemys[i].x += 2; break;
-					break;												  
-				case 3:if (maze[enemys[i].y + 1][enemys[i].x / 2] != '1') enemys[i].y++; break;
-					break;												  
-				case 4: if (maze[enemys[i].y][enemys[i].x / 2 - 1] != '1') enemys[i].x -= 2; break;
-					break;
-				}
+				
+				 int randomDir = rand() % 4 + 1;
+				 // 키 입력 받기
+				 switch (randomDir)
+				 {
+				 case 1: if (maze[enemys[i]->y - 1][enemys[i]->x / 2] != '1') enemys[i]->y--; break;
+				 	break;
+				 case 2:if (maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '1') enemys[i]->x += 2; break;
+				 	break;												  
+				 case 3:if (maze[enemys[i]->y + 1][enemys[i]->x / 2] != '1') enemys[i]->y++; break;
+				 	break;												  
+				 case 4: if (maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '1') enemys[i]->x -= 2; break;
+				 	break;
+				 }
 			}
 		}
 		// 플레이어의 충돌 코드
 		{
-
+			// 코인을 먹었을 때
+			if (maze[character.y][character.x / 2] == '2')
+			{
+				++coins;
+				maze[character.y][character.x / 2] = '0';
+			}
+			// 적과 충돌했을 때
+			for (int i = 0; i < 4; i++)
+			{
+				if (maze[character.y][character.x / 2] == maze[enemys[i]->y][enemys[i]->x / 2])
+				{
+					// 게임시작 하면 여기가 바로 출력됨 ( 오류 수정 바람)
+				}
+			}
 		}
 		// 진행상황 관리 코드
 		{
@@ -177,8 +195,8 @@ void main()
 		}
 		// 맵 삭제이후 재생성
 		{
-			system("cls");
-			Render();
+			 system("cls");
+			 Render();
 		}
 		// 순차대로 위치 구하고 출력하기
 		{
