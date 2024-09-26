@@ -2,6 +2,7 @@
 #include <conio.h>
 #include <Windows.h>
 #include <time.h>
+#include <stdbool.h>
 
 #define WIDTH 21
 #define HEIGHT 21
@@ -11,12 +12,27 @@
 #define RIGHT 77
 #define DOWN 80
 
+
+
 typedef struct Character
 {
 	int x;
 	int y;
 	const char* shape;
 }Character;
+
+// 플레이어 캐릭터 생성
+Character character = { 20,15,"●" };
+
+// 적 캐릭터 생성
+Character enemy1 = { 20,8,"△" };
+Character enemy2 = { 18,11,"▽" };
+Character enemy3 = { 20,11,"◁" };
+Character enemy4 = { 22,11,"▷" };
+
+Character* enemys[] = { &enemy1,&enemy2, &enemy3, &enemy4 };
+
+int coins = 0; // 플레이어가 먹은 코인의 개수
 
 
 void Position(int x, int y)
@@ -52,7 +68,6 @@ char maze[HEIGHT][WIDTH] =
 	{'1','2','2','2','1','1','2','2','3','1','2','1','3','2','2','1','1','2','2','2','1'},
 	{'1','1','1','1','1','1','1','1','1','1','6','1','1','1','1','1','1','1','1','1','1'},
 };
-
 // 맵 생성 관련 코드
 void Render()
 {
@@ -60,6 +75,7 @@ void Render()
 	{
 		for (int j = 0; j < WIDTH; j++)
 		{
+
 			switch (maze[i][j])
 			{
 				// 아무것도 없음
@@ -82,26 +98,51 @@ void Render()
 	}
 }
 
-// 플레이어 움직이기 코드
-void CharacterMove()
-{
+bool isInsMonster = false; // 몬스터 추가생성 확인
+bool isInsPower = false;// 파워업  생성 확인
+bool isSpeedUp = false;// 속도 증가 확인
+bool isChangeExit = false;// 출구생성 확인
 
+// 몬스터 추가 생성 코드
+void InsMonster(int enemyNum)
+{
+	if (!isInsMonster)
+	{
+		enemys[enemyNum]->x = 20;
+		enemys[enemyNum]->y = 8;
+		isInsMonster = true;
+	}
+	return 0;
+}
+// 파워업 아이템 생성
+void InsPower()
+{
+	if (!isInsPower)
+	{
+
+	}
+	return 0;
+}
+// 몬스터 스피드 증가
+void SpeedUP(int speedNum)
+{
+	if (!isSpeedUp)
+	{
+
+	}
+	return 0;
+}
+// 출구 생성
+void  ChangeExit()
+{
+	if (!isChangeExit)
+	{
+
+	}
+	return 0;
 }
 void main()
 {
-	// 플레이어 캐릭터 생성
-	Character character = { 20,15,"●" };
-
-	// 적 캐릭터 생성
-	Character enemy1 = { 20,6,"△" };
-	Character enemy2 = { 20,8,"▽" };
-	Character enemy3 = { 20,10,"◁" };
-	Character enemy4 = { 20,11,"▷" };
-
-	Character* enemys[] = { &enemy1,&enemy2, &enemy3, &enemy4 };
-	enemys[0]->x -= 2;
-
-	int coins = 0; // 플레이어가 먹은 코인의 개수
 	
 	
 	
@@ -161,13 +202,13 @@ void main()
 				 // 키 입력 받기
 				 switch (randomDir)
 				 {
-				 case 1: if (maze[enemys[i]->y - 1][enemys[i]->x / 2] != '1') enemys[i]->y--; break;
+				 case 1: if (maze[enemys[i]->y - 1][enemys[i]->x / 2] != '1'&& maze[enemys[i]->y - 1][enemys[i]->x / 2] != '5') enemys[i]->y--; break;
 				 	break;
-				 case 2:if (maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '1') enemys[i]->x += 2; break;
+				 case 2:if (maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '5') enemys[i]->x += 2; break;
 				 	break;												  
-				 case 3:if (maze[enemys[i]->y + 1][enemys[i]->x / 2] != '1') enemys[i]->y++; break;
+				 case 3:if (maze[enemys[i]->y + 1][enemys[i]->x / 2] != '1' && maze[enemys[i]->y + 1][enemys[i]->x / 2] != '5') enemys[i]->y++; break;
 				 	break;												  
-				 case 4: if (maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '1') enemys[i]->x -= 2; break;
+				 case 4: if (maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '5') enemys[i]->x -= 2; break;
 				 	break;
 				 }
 			}
@@ -183,21 +224,61 @@ void main()
 			// 적과 충돌했을 때
 			for (int i = 0; i < 4; i++)
 			{
-				if (maze[character.y][character.x / 2] == maze[enemys[i]->y][enemys[i]->x / 2])
+				if (character.y == enemys[i]->y && character.x == enemys[i]->x)
 				{
-					// 게임시작 하면 여기가 바로 출력됨 ( 오류 수정 바람)
+					// 게임 오버 실행
 				}
 			}
 		}
 		// 진행상황 관리 코드
 		{
-
-		}
+			//	// 코인 개수 관련 (전체 코인 개수: 189개)
+			//	if (coins >= 189)
+			//	{
+			//		// 통로중 한군데가 출구로 변경
+			//		ChangeExit();
+			//		// 몬스터 스피드 증가
+			//		SpeedUP(2);
+			//	}
+			//	else if (coins >= 150)
+			//	{
+			//		// 몬스터 스피드 증가
+			//		SpeedUP(1);
+			//	}
+			//	else if (coins >= 125)
+			//	{
+			//		// 통로 추가 생성
+			//		InsTelpo(1);
+			//		// 몬스터 추가 생성
+			//		InsMonster(3);
+			//	}
+			//	else if (coins >= 75)
+			//	{
+			//		// 통로 생성 (매개변수: 테레포드 통로 순서)
+			//		InsTelpo(0);
+			//		// 몬스터 스피드 증가 (매개변수: 스피드 증가값?)
+			//		SpeedUp(0);
+			//		// 몬스터 추가 생성
+			//		INsMonster(2);
+			//	}
+			//	else if (coins >= 50)
+			//	{
+			//		// 파워업 아이템 생성
+			//		InsPower();
+			//	}
+			//	else if (coins >= 25)
+			//	{
+			//		// 몬스터 추가 생성
+			//		InsMonster(1);
+			//	} 
+		}// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@해야할 것: 함수에서 한번씩 호출되게끔 만들기, 함수 만들기
+		
 		// 맵 삭제이후 재생성
 		{
 			 system("cls");
 			 Render();
 		}
+
 		// 순차대로 위치 구하고 출력하기
 		{
 			Position(enemy1.x, enemy1.y);
@@ -219,5 +300,6 @@ void main()
 		Sleep(200);
 
 	}
+
 	return 0;
 }
