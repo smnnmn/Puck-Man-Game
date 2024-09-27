@@ -1,14 +1,9 @@
 ﻿  Source.c
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(115,10): warning C4098: 'InsMonster': 'void' 함수에서 값을 반환하고 있습니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(124,10): warning C4098: 'InsPower': 'void' 함수에서 값을 반환하고 있습니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(133,10): warning C4098: 'SpeedUP': 'void' 함수에서 값을 반환하고 있습니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(142,10): warning C4098: 'ChangeExit': 'void' 함수에서 값을 반환하고 있습니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(196,10): warning C4244: '함수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(251,5): warning C4013: 'InsTelpo'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(260,5): warning C4013: 'SpeedUp'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(262,5): warning C4013: 'INsMonster'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(304,2): warning C4098: 'main': 'void' 함수에서 값을 반환하고 있습니다.
-Source.obj : error LNK2019: InsTelpomain 함수에서 참조되는 확인할 수 없는 외부 기호
-Source.obj : error LNK2019: SpeedUpmain 함수에서 참조되는 확인할 수 없는 외부 기호
-Source.obj : error LNK2019: INsMonstermain 함수에서 참조되는 확인할 수 없는 외부 기호
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\x64\Debug\Puck-Man Game.exe : fatal error LNK1120: 3개의 확인할 수 없는 외부 참조입니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(136,10): warning C4098: 'InsMonster': 'void' 함수에서 값을 반환하고 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(142,10): warning C4098: 'InsPower': 'void' 함수에서 값을 반환하고 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(148,10): warning C4098: 'SpeedUP': 'void' 함수에서 값을 반환하고 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(182,10): warning C4098: 'InsTelpo': 'void' 함수에서 값을 반환하고 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(221,10): warning C4098: 'ChangeExit': 'void' 함수에서 값을 반환하고 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(281,10): warning C4244: '함수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(479,2): warning C4098: 'main': 'void' 함수에서 값을 반환하고 있습니다.
+  Puck-Man Game.vcxproj -> C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\x64\Debug\Puck-Man Game.exe

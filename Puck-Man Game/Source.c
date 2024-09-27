@@ -12,7 +12,26 @@
 #define RIGHT 77
 #define DOWN 80
 
+bool isInsMonster1 = false; // 몬스터1 추가생성 확인
+bool isInsMonster2 = false; // 몬스터2 추가생성 확인
+bool isInsMonster3 = false; // 몬스터3 추가생성 확인
 
+bool isInsPower = false;// 파워업  생성 확인
+
+bool isSpeedUp1 = false;// 속도 1증가 확인
+bool isSpeedUp2 = false;// 속도 2증가 확인
+bool isSpeedUp3 = false;// 속도 3증가 확인
+
+bool isInsTelpo1 = false; // 통로1 생성
+bool isInsTelpo2 = false; // 통로2 생성
+
+bool isChangeExit = false;// 출구생성 확인
+
+bool isGameOver = false; // 게임 오버 확인
+bool isGameClear = false; // 게임 클리어 확인
+
+int exitX = 0;
+int exitY = 0;
 
 typedef struct Character
 {
@@ -34,6 +53,7 @@ Character* enemys[] = { &enemy1,&enemy2, &enemy3, &enemy4 };
 
 int coins = 0; // 플레이어가 먹은 코인의 개수
 
+int gameSpeed = 200; // 게임 플레이 속도
 
 void Position(int x, int y)
 {
@@ -46,7 +66,7 @@ void Position(int x, int y)
 
 char maze[HEIGHT][WIDTH] =
 {
-	{'1','1','1','1','1','1','1','1','1','1','6','1','1','1','1','1','1','1','1','1','1'},
+	{'1','1','1','1','1','1','1','1','1','1','7','1','1','1','1','1','1','1','1','1','1'},
 	{'1','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','1'},
 	{'1','1','2','1','2','1','1','1','2','1','2','1','2','1','1','1','2','1','2','1','1'},
 	{'1','1','2','1','2','2','2','1','2','1','1','1','2','1','2','2','2','1','2','1','1'},
@@ -56,17 +76,17 @@ char maze[HEIGHT][WIDTH] =
 	{'1','2','1','2','1','1','1','2','1','1','1','1','1','2','1','1','1','2','1','2','1'},
 	{'1','2','1','2','2','2','2','0','0','0','0','0','0','0','2','2','2','2','1','2','1'},
 	{'1','2','1','2','1','1','1','0','1','1','5','1','1','0','1','1','1','2','1','2','1'},
-	{'6','2','1','2','1','2','2','0','1','0','2','0','1','0','2','2','1','2','1','2','6'},
+	{'6','2','1','2','1','2','2','0','1','0','0','0','1','0','2','2','1','2','1','2','6'},
 	{'1','2','1','2','1','2','1','0','1','0','0','0','1','0','1','2','1','2','1','2','1'},
 	{'1','2','2','2','2','2','1','0','1','1','1','1','1','0','1','2','2','2','2','2','1'},
 	{'1','2','1','2','1','2','1','0','0','0','1','0','0','0','1','2','1','2','1','2','1'},
 	{'1','2','1','3','1','2','2','2','1','2','1','2','1','2','2','2','1','3','1','2','1'},
-	{'1','2','1','1','1','2','1','1','1','2','2','2','1','1','1','2','1','1','1','2','1'},
+	{'1','2','1','1','1','2','1','1','1','2','0','2','1','1','1','2','1','1','1','2','1'},
 	{'1','2','2','2','2','2','2','1','1','1','2','1','1','1','2','2','2','2','2','2','1'},
 	{'1','2','1','2','1','1','2','2','2','2','2','2','2','2','2','1','1','2','1','2','1'},
 	{'1','2','1','2','2','2','2','1','1','1','2','1','1','1','2','2','2','2','1','2','1'},
 	{'1','2','2','2','1','1','2','2','3','1','2','1','3','2','2','1','1','2','2','2','1'},
-	{'1','1','1','1','1','1','1','1','1','1','6','1','1','1','1','1','1','1','1','1','1'},
+	{'1','1','1','1','1','1','1','1','1','1','7','1','1','1','1','1','1','1','1','1','1'},
 };
 // 맵 생성 관련 코드
 void Render()
@@ -83,64 +103,129 @@ void Render()
 				// 아무도 나가지 못하는 벽
 			case '1': printf("■"); break;
 				// 플레이어가 먹어야할 코인
-			case '2': printf("ㆍ"); break;
+			case '2': printf("ㆍ");  break;
 				// 플레이어가 먹으면 강화되는 아이템
-			case '3': printf("⊙"); break;
+			case '3': if (!isInsPower) { printf("  "); }
+					else { printf("⊙"); } break;
 				// 생성되는 출구
 			case'4': printf("★"); break;
 				// 적 기지의 입구
 			case '5': printf("□"); break;
-				//막혀있는 통로 (나중에 그냥 벽으로 바꾸기 -- 코드 복작해짐)
-			case '6': printf("◆"); break;
+				// 닫힌 통로1 &  열린 통로2
+			case '6':  printf("◆");  
+				break;
+				// 닫힌 통로2 & 열린 통로2
+			case '7':  printf("◆"); 
+					break;
+			case '8': printf("♤"); break;
+			case '9': printf("♡"); break;
 			}
 		}
 		printf("\n");
 	}
 }
 
-bool isInsMonster = false; // 몬스터 추가생성 확인
-bool isInsPower = false;// 파워업  생성 확인
-bool isSpeedUp = false;// 속도 증가 확인
-bool isChangeExit = false;// 출구생성 확인
 
 // 몬스터 추가 생성 코드
 void InsMonster(int enemyNum)
 {
-	if (!isInsMonster)
-	{
-		enemys[enemyNum]->x = 20;
-		enemys[enemyNum]->y = 8;
-		isInsMonster = true;
-	}
+	enemys[enemyNum]->x = 20;
+	enemys[enemyNum]->y = 8;
+	isInsMonster1 = true;
+
 	return 0;
 }
 // 파워업 아이템 생성
 void InsPower()
 {
-	if (!isInsPower)
-	{
-
-	}
+	
 	return 0;
 }
 // 몬스터 스피드 증가
-void SpeedUP(int speedNum)
+void SpeedUP(int speed)
 {
-	if (!isSpeedUp)
+	gameSpeed = speed;
+	return 0;
+}
+// 텔레포트 통로 생성
+void InsTelpo(int potalNum)
+{
+	switch (potalNum)
 	{
+	case 0:
+		for (int i = 0; i < HEIGHT; i++)
+		{
+			for (int j = 0; j < WIDTH; j++)
+			{
 
+				switch (maze[i][j])
+				{
+				case '6': maze[i][j] = '8';
+				}
+			}
+			
+		}
+		break;
+	case 1:for (int i = 0; i < HEIGHT; i++)
+	{
+		for (int j = 0; j < WIDTH; j++)
+		{
+
+			switch (maze[i][j])
+			{
+			case '7': maze[i][j] = '9';
+			}
+		}
+
+	}
 	}
 	return 0;
 }
 // 출구 생성
 void  ChangeExit()
 {
-	if (!isChangeExit)
+	// 어떤 표시의 통로가 출구가 될 것인가
+	int randomExit = rand() % 2; // 0이나 1이 나옴 (1/2확률)
+	
+	// 어떤 위치에 출구가 만들어 질 것인가
+	int randomPosition = rand() % 2; // 0이나 1이 나옴
+	switch (randomExit)
 	{
+	case 0: for (int i = 0; i < HEIGHT; i++)
+	{
+		for (int j = 0; j < WIDTH; j++)
+		{
 
+			switch (maze[i][j])
+			{
+			case '8': if (randomPosition == 0) { maze[i][j] = '4'; exitY = i; exitX = j;  return; }
+					else if (randomPosition != 0) { randomPosition--; }
+					break;
+			}
+		}
+	}
+	case 1: for (int i = 0; i < HEIGHT; i++)
+	{
+		for (int j = 0; j < WIDTH; j++)
+		{
+
+			switch (maze[i][j])
+			{
+			case '9': if (randomPosition == 0){maze[i][j] = '4'; exitY = i; exitX = j; return;}
+					else if (randomPosition != 0) { randomPosition--; }
+					break;
+			}
+		}
+	}
 	}
 	return 0;
 }
+// UI를 관리하는 함수
+void UIManager()
+{
+
+}
+
 void main()
 {
 	
@@ -151,8 +236,9 @@ void main()
 	int dir = 0;
 
 	 Render();
+	 UIManager();
 
-	 while (1)
+	 while (!isGameOver && !isGameClear)
 	{
 		
 		// 플레이어 움직이기 코드
@@ -174,7 +260,7 @@ void main()
 					break;
 				case RIGHT:if (maze[character.y][character.x / 2 + 1] != '1') dir = 2;
 					break;
-				case DOWN: if (maze[character.y + 1][character.x / 2] != '1')dir = 3;
+				case DOWN: if (maze[character.y + 1][character.x / 2] != '1' )dir = 3;
 					break;
 				}
 
@@ -183,11 +269,10 @@ void main()
 			// 움직이기
 			switch (dir)
 			{
-			case 1: if (maze[character.y - 1][character.x / 2] != '1')  character.y--; break;
-			case 2: if (maze[character.y][character.x / 2 + 1] != '1') character.x += 2; break;
-			case 3: if (maze[character.y + 1][character.x / 2] != '1') character.y++; break;
-			case 4: if (maze[character.y][character.x / 2 - 1] != '1') character.x -= 2; break;
-
+			case 1: if (maze[character.y - 1][character.x / 2] != '1' && maze[character.y - 1][character.x / 2] != '7')  character.y--; break;
+			case 2: if (maze[character.y][character.x / 2 + 1] != '1' && maze[character.y][character.x / 2 + 1] != '6') character.x += 2; break;
+			case 3: if (maze[character.y + 1][character.x / 2] != '1' && maze[character.y + 1][character.x / 2] != '7') character.y++; break;
+			case 4: if (maze[character.y][character.x / 2 - 1] != '1' && maze[character.y][character.x / 2 - 1] != '6') character.x -= 2; break;
 			}
 		}
 		
@@ -221,62 +306,144 @@ void main()
 				++coins;
 				maze[character.y][character.x / 2] = '0';
 			}
+			// 아이템을 먹었을 때
+			{
+			//	if (maze[character.y][character.x])
+			}
+			// 포탈을 탔을때
+			{
+				// 위쪽 포탈
+				if (character.y == 0 && character.x == 20 && maze[0][10] == '9')
+				{
+					character.y = 19;
+					character.x = 20;
+				}
+				// 오른쪽 포탈
+				else if (character.y == 10 && character.x == 40 && maze[10][20] == '8')
+				{
+					character.y = 10;
+					character.x = 2;
+				}
+				// 밑쪽 포탈
+				else if (character.y == 20 && character.x == 20 && maze[20][10] == '9')
+				{
+					character.y = 1;
+					character.x = 20;
+				}
+				// 왼쪽 포탈
+				else if (character.y == 10 && character.x == 0 && maze[10][0] == '8')
+				{
+					character.y = 10;
+					character.x = 38;
+				}
+			}
+
+			// 출구로 들어갔을때
+			{
+				if (character.x / 2 == exitX && character.y == exitY)
+				{
+					isGameClear = true;
+					// 클리어 실행
+				}
+			}
 			// 적과 충돌했을 때
 			for (int i = 0; i < 4; i++)
 			{
 				if (character.y == enemys[i]->y && character.x == enemys[i]->x)
 				{
-					// 게임 오버 실행
+					isGameOver = true;
 				}
 			}
 		}
 		// 진행상황 관리 코드
 		{
-			//	// 코인 개수 관련 (전체 코인 개수: 189개)
-			//	if (coins >= 189)
-			//	{
-			//		// 통로중 한군데가 출구로 변경
-			//		ChangeExit();
-			//		// 몬스터 스피드 증가
-			//		SpeedUP(2);
-			//	}
-			//	else if (coins >= 150)
-			//	{
-			//		// 몬스터 스피드 증가
-			//		SpeedUP(1);
-			//	}
-			//	else if (coins >= 125)
-			//	{
-			//		// 통로 추가 생성
-			//		InsTelpo(1);
-			//		// 몬스터 추가 생성
-			//		InsMonster(3);
-			//	}
-			//	else if (coins >= 75)
-			//	{
-			//		// 통로 생성 (매개변수: 테레포드 통로 순서)
-			//		InsTelpo(0);
-			//		// 몬스터 스피드 증가 (매개변수: 스피드 증가값?)
-			//		SpeedUp(0);
-			//		// 몬스터 추가 생성
-			//		INsMonster(2);
-			//	}
-			//	else if (coins >= 50)
-			//	{
-			//		// 파워업 아이템 생성
-			//		InsPower();
-			//	}
-			//	else if (coins >= 25)
-			//	{
-			//		// 몬스터 추가 생성
-			//		InsMonster(1);
-			//	} 
-		}// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@해야할 것: 함수에서 한번씩 호출되게끔 만들기, 함수 만들기
+			// 코인 개수 관련 (전체 코인 개수: 187개)
+			if (coins >= 126)
+			{
+				if (!isChangeExit)
+				{
+					isChangeExit = true;
+					// 통로중 한군데가 출구로 변경
+					ChangeExit();
+				}
+				if (!isSpeedUp3)
+				{
+					isSpeedUp3 = true;
+					// 몬스터 스피드 증가 (매개변수: 스피드 증가값?)
+					SpeedUP(125);
+				}
+			}
+			else if (coins >= 150)
+			{
+				if (!isSpeedUp2)
+				{
+					isSpeedUp2 = true;
+					// 몬스터 스피드 증가 (매개변수: 스피드 증가값?)
+					SpeedUP(150);
+				}
+			}
+			else if (coins >= 125)
+			{
+				if (!isInsTelpo2)
+				{
+					isInsTelpo2 = true;
+					// 통로 추가 생성
+					InsTelpo(1);
+				}
+				if (!isInsMonster3)
+				{
+					isInsMonster3 = true;
+					// 몬스터 추가 생성
+					InsMonster(3);
+				}
+			}
+			else if (coins >= 75)
+			{
+				if (!isInsTelpo1)
+				{
+					isInsTelpo1 = true;
+					// 통로 생성 (매개변수: 테레포드 통로 순서)
+					InsTelpo(0);
+				}
+				
+				if (!isInsMonster2)
+				{
+					isInsMonster2 = true;
+					// 몬스터 추가 생성
+					InsMonster(2);
+				}
+			}
+			else if (coins >= 50)
+			{
+				if (!isInsPower)
+				{
+					isInsPower = true;
+					// 파워업 아이템 생성
+					InsPower();
+				}
+				if (!isSpeedUp1)
+				{
+					isSpeedUp1 = true;
+					// 몬스터 스피드 증가 (매개변수: 스피드 증가값?)
+					SpeedUP(175);
+				}
+			}
+			else if (coins >= 25)
+			{
+				if (!isInsMonster1)
+				{
+					isInsMonster1 = true;
+					// 몬스터 추가 생성
+					InsMonster(1);
+				}
+			} 
+		}
 		
 		// 맵 삭제이후 재생성
 		{
 			 system("cls");
 			 Render();
+			 UIManager();
 		}
 
 		// 순차대로 위치 구하고 출력하기
@@ -297,9 +464,17 @@ void main()
 			printf("%s", character.shape);
 		}
 		
-		Sleep(200);
+		Sleep(gameSpeed);
 
 	}
-
+	system("cls");
+	if (isGameOver)
+	{
+		printf("GameOver");
+	}
+	else if (isGameClear)
+	{
+		printf("Game Clear!");
+	}
 	return 0;
 }
