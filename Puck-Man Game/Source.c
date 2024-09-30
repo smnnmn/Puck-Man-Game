@@ -30,8 +30,12 @@ bool isChangeExit = false;// 출구생성 확인
 bool isGameOver = false; // 게임 오버 확인
 bool isGameClear = false; // 게임 클리어 확인
 
+bool isPowerUp = false; // 파워업 상태 확인
+
 int exitX = 0;
 int exitY = 0;
+
+int powerTime = 0;
 
 typedef struct Character
 {
@@ -52,8 +56,12 @@ Character enemy4 = { 22,11,"▷" };
 Character* enemys[] = { &enemy1,&enemy2, &enemy3, &enemy4 };
 
 int coins = 0; // 플레이어가 먹은 코인의 개수
+int nextcoins = 0; // 플레이어의 다음 코인 목표
+
+char nextAction[]; // 플레이어의 다음 생기는 상황
 
 int gameSpeed = 200; // 게임 플레이 속도
+int tempGameSpeed = 0; // 게임 플레이 속도 저장용
 
 void Position(int x, int y)
 {
@@ -135,16 +143,18 @@ void InsMonster(int enemyNum)
 
 	return 0;
 }
-// 파워업 아이템 생성
-void InsPower()
+// 파워업 상태 돌입
+void PowerTime()
 {
-	
+	// 30 딜레이?
+	powerTime++;
 	return 0;
 }
 // 몬스터 스피드 증가
 void SpeedUP(int speed)
 {
 	gameSpeed = speed;
+	tempGameSpeed = speed;
 	return 0;
 }
 // 텔레포트 통로 생성
@@ -218,12 +228,18 @@ void  ChangeExit()
 		}
 	}
 	}
+
 	return 0;
 }
 // UI를 관리하는 함수
 void UIManager()
 {
-
+	// 목표 설정 & 미션 결과
+	printf("코인 미션:%d / %d \n", coins,nextcoins);
+	// 마지막 설정
+	printf("%d\n", gameSpeed);
+	// 스코어
+	
 }
 
 void main()
@@ -308,7 +324,29 @@ void main()
 			}
 			// 아이템을 먹었을 때
 			{
-			//	if (maze[character.y][character.x])
+				
+				if (maze[character.y][character.x / 2] == '3' && isInsPower)
+				{
+					maze[character.y][character.x / 2] = '0';
+					// 파워업 상태 돌입
+					powerTime = 0;
+					isPowerUp = true;
+					gameSpeed = 100;
+				}
+			}
+			// 딜레이마다 파워업 시간 추가(코루틴 대체)
+			if (isPowerUp && powerTime < 30)
+			{
+				PowerTime();
+			}
+			else
+			{
+				isPowerUp = false; 
+				if (tempGameSpeed != 0)
+				{
+				gameSpeed = tempGameSpeed;
+
+				}
 			}
 			// 포탈을 탔을때
 			{
@@ -351,7 +389,15 @@ void main()
 			{
 				if (character.y == enemys[i]->y && character.x == enemys[i]->x)
 				{
-					isGameOver = true;
+					// 파워업 상태 확인
+					if (isPowerUp)
+					{
+						
+					}
+					else
+					{
+						isGameOver = true;
+					}
 				}
 			}
 		}
@@ -360,11 +406,25 @@ void main()
 			// 코인 개수 관련 (전체 코인 개수: 187개)
 			if (coins >= 126)
 			{
+				nextcoins = 187;
 				if (!isChangeExit)
 				{
 					isChangeExit = true;
 					// 통로중 한군데가 출구로 변경
 					ChangeExit();
+					// 다른 통로의 입구 막기
+					for (int i = 0; i < HEIGHT; i++)
+					{
+						for (int j = 0; j < WIDTH; j++)
+						{
+
+							switch (maze[i][j])
+							{
+							case '8': maze[i][j] = '1'; break;
+							case '9': maze[i][j] = '1'; break;
+							}
+						}
+					}
 				}
 				if (!isSpeedUp3)
 				{
@@ -375,6 +435,7 @@ void main()
 			}
 			else if (coins >= 150)
 			{
+				nextcoins = 187;
 				if (!isSpeedUp2)
 				{
 					isSpeedUp2 = true;
@@ -384,6 +445,7 @@ void main()
 			}
 			else if (coins >= 125)
 			{
+				nextcoins = 150;
 				if (!isInsTelpo2)
 				{
 					isInsTelpo2 = true;
@@ -399,6 +461,7 @@ void main()
 			}
 			else if (coins >= 75)
 			{
+				nextcoins = 125;
 				if (!isInsTelpo1)
 				{
 					isInsTelpo1 = true;
@@ -415,11 +478,10 @@ void main()
 			}
 			else if (coins >= 50)
 			{
+				nextcoins = 75;
 				if (!isInsPower)
 				{
 					isInsPower = true;
-					// 파워업 아이템 생성
-					InsPower();
 				}
 				if (!isSpeedUp1)
 				{
@@ -430,6 +492,7 @@ void main()
 			}
 			else if (coins >= 25)
 			{
+				nextcoins = 50;
 				if (!isInsMonster1)
 				{
 					isInsMonster1 = true;
@@ -437,6 +500,10 @@ void main()
 					InsMonster(1);
 				}
 			} 
+			// 게임 초기상황
+			else {
+				nextcoins = 25;
+			}
 		}
 		
 		// 맵 삭제이후 재생성

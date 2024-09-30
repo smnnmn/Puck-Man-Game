@@ -1,9 +1,11 @@
 ﻿  Source.c
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(136,10): warning C4098: 'InsMonster': 'void' 함수에서 값을 반환하고 있습니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(142,10): warning C4098: 'InsPower': 'void' 함수에서 값을 반환하고 있습니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(148,10): warning C4098: 'SpeedUP': 'void' 함수에서 값을 반환하고 있습니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(182,10): warning C4098: 'InsTelpo': 'void' 함수에서 값을 반환하고 있습니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(221,10): warning C4098: 'ChangeExit': 'void' 함수에서 값을 반환하고 있습니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(281,10): warning C4244: '함수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(479,2): warning C4098: 'main': 'void' 함수에서 값을 반환하고 있습니다.
-  Puck-Man Game.vcxproj -> C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\x64\Debug\Puck-Man Game.exe
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(62,1): error C2040: 'nextAction': 'int'의 간접 참조 수준이 'char [0]'과(와) 다릅니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(145,10): warning C4098: 'InsMonster': 'void' 함수에서 값을 반환하고 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(152,10): warning C4098: 'PowerTime': 'void' 함수에서 값을 반환하고 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(159,10): warning C4098: 'SpeedUP': 'void' 함수에서 값을 반환하고 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(193,10): warning C4098: 'InsTelpo': 'void' 함수에서 값을 반환하고 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(233,10): warning C4098: 'ChangeExit': 'void' 함수에서 값을 반환하고 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(239,9): warning C4477: 'printf' : 서식 문자열 '%c'에 'int' 형식의 인수가 필요하지만 variadic 인수 3의 형식이 'char *'입니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(239,9): warning C4313: 'printf': 서식 문자열의 '%c'이(가) char *' 형식의 인수 3과(와) 충돌합니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(298,10): warning C4244: '함수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\test1\Desktop\Puck-Man-Game\Puck-Man Game\Source.c(547,2): warning C4098: 'main': 'void' 함수에서 값을 반환하고 있습니다.
