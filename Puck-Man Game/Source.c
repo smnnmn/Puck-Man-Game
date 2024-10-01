@@ -35,6 +35,8 @@ bool isPowerUp = false; // 파워업 상태 확인
 int exitX = 0;
 int exitY = 0;
 
+int enemysDir[4] = { 0,0,0,0 };
+
 int powerTime = 0;
 
 typedef struct Character
@@ -62,6 +64,10 @@ char nextAction[]; // 플레이어의 다음 생기는 상황
 
 int gameSpeed = 200; // 게임 플레이 속도
 int tempGameSpeed = 0; // 게임 플레이 속도 저장용
+
+const char* nextString = ""; // 다음 진행 상황
+const char* beforeString = ""; // 이전 목표 상황 
+
 
 void Position(int x, int y)
 {
@@ -141,21 +147,18 @@ void InsMonster(int enemyNum)
 	enemys[enemyNum]->y = 8;
 	isInsMonster1 = true;
 
-	return 0;
 }
 // 파워업 상태 돌입
 void PowerTime()
 {
 	// 30 딜레이?
 	powerTime++;
-	return 0;
 }
 // 몬스터 스피드 증가
 void SpeedUP(int speed)
 {
 	gameSpeed = speed;
 	tempGameSpeed = speed;
-	return 0;
 }
 // 텔레포트 통로 생성
 void InsTelpo(int potalNum)
@@ -189,7 +192,7 @@ void InsTelpo(int potalNum)
 
 	}
 	}
-	return 0;
+	
 }
 // 출구 생성
 void  ChangeExit()
@@ -235,17 +238,25 @@ void  ChangeExit()
 void UIManager()
 {
 	// 목표 설정 & 미션 결과
-	printf("코인 미션:%d / %d \n", coins,nextcoins);
+	printf("코인 미션:%d / %d --> %s  \n", coins,nextcoins,nextString);
+	printf("\n");
+	// 파워업 상태창
+	if (isPowerUp)
+	{
+		printf("파워 업!  무적 & 속도증가\t남은시간: %d\n", 20 - powerTime);
+		printf("\n");
+	}
+	
 	// 마지막 설정
-	printf("%d\n", gameSpeed);
-	// 스코어
+	if (coins >= 25)
+	{
+		printf("이전 변경:%s\n", beforeString);
+	}
 	
 }
 
 void main()
 {
-	
-	
 	
 	char key = 0;
 	// 방향 (시계방향으로 12시부터 1,2,3,4)
@@ -295,24 +306,29 @@ void main()
 		// 적 움직이기 코드
 		{
 			srand(time(NULL));
-			// int size = sizeof(enemys) / sizeof(Character); 값 이상함
 			for (int i = 0; i < 4; i++)
 			{
+					int randomDir = rand() % 4 + 1;
+					
 				
-				 int randomDir = rand() % 4 + 1;
-				 // 키 입력 받기
+				 // 랜덤으로 움직이기
 				 switch (randomDir)
 				 {
-				 case 1: if (maze[enemys[i]->y - 1][enemys[i]->x / 2] != '1'&& maze[enemys[i]->y - 1][enemys[i]->x / 2] != '5') enemys[i]->y--; break;
+				 case 1: if (maze[enemys[i]->y - 1][enemys[i]->x / 2] != '1'&& maze[enemys[i]->y - 1][enemys[i]->x / 2] != '5') enemys[i]->y--; 
+					   else { i--;   continue; }
 				 	break;
-				 case 2:if (maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '5') enemys[i]->x += 2; break;
+				 case 2:if (maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '5') enemys[i]->x += 2; 
+					   else { i--;   continue; }
 				 	break;												  
-				 case 3:if (maze[enemys[i]->y + 1][enemys[i]->x / 2] != '1' && maze[enemys[i]->y + 1][enemys[i]->x / 2] != '5') enemys[i]->y++; break;
+				 case 3:if (maze[enemys[i]->y + 1][enemys[i]->x / 2] != '1' && maze[enemys[i]->y + 1][enemys[i]->x / 2] != '5') enemys[i]->y++; 
+					   else { i--;  continue; }
 				 	break;												  
-				 case 4: if (maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '5') enemys[i]->x -= 2; break;
+				 case 4: if (maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '5') enemys[i]->x -= 2;
+					   else { i--;   continue; }
 				 	break;
 				 }
 			}
+
 		}
 		// 플레이어의 충돌 코드
 		{
@@ -335,7 +351,7 @@ void main()
 				}
 			}
 			// 딜레이마다 파워업 시간 추가(코루틴 대체)
-			if (isPowerUp && powerTime < 30)
+			if (isPowerUp && powerTime < 20)
 			{
 				PowerTime();
 			}
@@ -392,7 +408,8 @@ void main()
 					// 파워업 상태 확인
 					if (isPowerUp)
 					{
-						
+						enemys[i]->x = 20;
+						enemys[i]->y = 8;
 					}
 					else
 					{
@@ -404,9 +421,11 @@ void main()
 		// 진행상황 관리 코드
 		{
 			// 코인 개수 관련 (전체 코인 개수: 187개)
-			if (coins >= 126)
+			if (coins >= 187)
 			{
 				nextcoins = 187;
+				nextString = "출구를 찾아라!";
+				beforeString = "속도 증가, 출구 생성";
 				if (!isChangeExit)
 				{
 					isChangeExit = true;
@@ -436,6 +455,8 @@ void main()
 			else if (coins >= 150)
 			{
 				nextcoins = 187;
+				nextString = "속도 증가, 출구 생성";
+				beforeString = "통로 생성, 몬스터 추가";
 				if (!isSpeedUp2)
 				{
 					isSpeedUp2 = true;
@@ -446,6 +467,7 @@ void main()
 			else if (coins >= 125)
 			{
 				nextcoins = 150;
+				nextString = "속도 증가";
 				if (!isInsTelpo2)
 				{
 					isInsTelpo2 = true;
@@ -462,6 +484,8 @@ void main()
 			else if (coins >= 75)
 			{
 				nextcoins = 125;
+				nextString = "통로 생성, 몬스터 추가";
+				beforeString = "통로 생성, 몬스터 추가";
 				if (!isInsTelpo1)
 				{
 					isInsTelpo1 = true;
@@ -479,6 +503,8 @@ void main()
 			else if (coins >= 50)
 			{
 				nextcoins = 75;
+				nextString = "통로 생성, 몬스터 추가";
+				beforeString = "파워업 아이템, 속도증가";
 				if (!isInsPower)
 				{
 					isInsPower = true;
@@ -493,6 +519,8 @@ void main()
 			else if (coins >= 25)
 			{
 				nextcoins = 50;
+				nextString = "파워업 아이템, 속도증가";
+				beforeString = "몬스터 추가";
 				if (!isInsMonster1)
 				{
 					isInsMonster1 = true;
@@ -502,6 +530,7 @@ void main()
 			} 
 			// 게임 초기상황
 			else {
+				nextString = "몬스터 추가";
 				nextcoins = 25;
 			}
 		}
