@@ -32,10 +32,13 @@ bool isGameClear = false; // 게임 클리어 확인
 
 bool isPowerUp = false; // 파워업 상태 확인
 
+int randomDir = 0;
+
 int exitX = 0;
 int exitY = 0;
 
-int enemysDir[4] = { 0,0,0,0 };
+int enemysDir[4] = { 0,0,0,0 }; // 적의 이동 방향을 저장
+bool enemysFind[4] = { false,false,false,false }; // 적의 플레이어 찾음의 유무
 
 int powerTime = 0;
 
@@ -81,8 +84,8 @@ void Position(int x, int y)
 char maze[HEIGHT][WIDTH] =
 {
 	{'1','1','1','1','1','1','1','1','1','1','7','1','1','1','1','1','1','1','1','1','1'},
-	{'1','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','1'},
-	{'1','1','2','1','2','1','1','1','2','1','2','1','2','1','1','1','2','1','2','1','1'},
+	{'1','2','2','1','2','2','2','2','2','2','2','2','2','2','2','2','2','1','2','2','1'},
+	{'1','1','2','2','2','1','1','1','2','1','2','1','2','1','1','1','2','2','2','1','1'},
 	{'1','1','2','1','2','2','2','1','2','1','1','1','2','1','2','2','2','1','2','1','1'},
 	{'1','2','2','1','2','1','3','1','2','2','2','2','2','1','3','1','2','1','2','2','1'},
 	{'1','2','1','1','2','1','1','1','2','1','2','1','2','1','1','1','2','1','1','2','1'},
@@ -126,11 +129,11 @@ void Render()
 				// 적 기지의 입구
 			case '5': printf("□"); break;
 				// 닫힌 통로1 &  열린 통로2
-			case '6':  printf("◆");  
+			case '6':  printf("◆");
 				break;
 				// 닫힌 통로2 & 열린 통로2
-			case '7':  printf("◆"); 
-					break;
+			case '7':  printf("◆");
+				break;
 			case '8': printf("♤"); break;
 			case '9': printf("♡"); break;
 			}
@@ -176,7 +179,7 @@ void InsTelpo(int potalNum)
 				case '6': maze[i][j] = '8';
 				}
 			}
-			
+
 		}
 		break;
 	case 1:for (int i = 0; i < HEIGHT; i++)
@@ -192,14 +195,14 @@ void InsTelpo(int potalNum)
 
 	}
 	}
-	
+
 }
 // 출구 생성
 void  ChangeExit()
 {
 	// 어떤 표시의 통로가 출구가 될 것인가
 	int randomExit = rand() % 2; // 0이나 1이 나옴 (1/2확률)
-	
+
 	// 어떤 위치에 출구가 만들어 질 것인가
 	int randomPosition = rand() % 2; // 0이나 1이 나옴
 	switch (randomExit)
@@ -224,7 +227,7 @@ void  ChangeExit()
 
 			switch (maze[i][j])
 			{
-			case '9': if (randomPosition == 0){maze[i][j] = '4'; exitY = i; exitX = j; return;}
+			case '9': if (randomPosition == 0) { maze[i][j] = '4'; exitY = i; exitX = j; return; }
 					else if (randomPosition != 0) { randomPosition--; }
 					break;
 			}
@@ -238,7 +241,7 @@ void  ChangeExit()
 void UIManager()
 {
 	// 목표 설정 & 미션 결과
-	printf("코인 미션:%d / %d --> %s  \n", coins,nextcoins,nextString);
+	printf("코인 미션:%d / %d --> %s  \n", coins, nextcoins, nextString);
 	printf("\n");
 	// 파워업 상태창
 	if (isPowerUp)
@@ -246,28 +249,29 @@ void UIManager()
 		printf("파워 업!  무적 & 속도증가\t남은시간: %d\n", 20 - powerTime);
 		printf("\n");
 	}
-	
+
 	// 마지막 설정
 	if (coins >= 25)
 	{
 		printf("이전 변경:%s\n", beforeString);
 	}
-	
+
+
 }
 
 void main()
 {
-	
+
 	char key = 0;
 	// 방향 (시계방향으로 12시부터 1,2,3,4)
 	int dir = 0;
 
-	 Render();
-	 UIManager();
+	Render();
+	UIManager();
 
-	 while (!isGameOver && !isGameClear)
+	while (!isGameOver && !isGameClear)
 	{
-		
+
 		// 플레이어 움직이기 코드
 		{
 			if (_kbhit())
@@ -287,7 +291,7 @@ void main()
 					break;
 				case RIGHT:if (maze[character.y][character.x / 2 + 1] != '1') dir = 2;
 					break;
-				case DOWN: if (maze[character.y + 1][character.x / 2] != '1' )dir = 3;
+				case DOWN: if (maze[character.y + 1][character.x / 2] != '1')dir = 3;
 					break;
 				}
 
@@ -302,31 +306,66 @@ void main()
 			case 4: if (maze[character.y][character.x / 2 - 1] != '1' && maze[character.y][character.x / 2 - 1] != '6') character.x -= 2; break;
 			}
 		}
-		
+
 		// 적 움직이기 코드
 		{
 			srand(time(NULL));
 			for (int i = 0; i < 4; i++)
 			{
-					int randomDir = rand() % 4 + 1;
-					
-				
-				 // 랜덤으로 움직이기
-				 switch (randomDir)
-				 {
-				 case 1: if (maze[enemys[i]->y - 1][enemys[i]->x / 2] != '1'&& maze[enemys[i]->y - 1][enemys[i]->x / 2] != '5') enemys[i]->y--; 
-					   else { i--;   continue; }
-				 	break;
-				 case 2:if (maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '5') enemys[i]->x += 2; 
-					   else { i--;   continue; }
-				 	break;												  
-				 case 3:if (maze[enemys[i]->y + 1][enemys[i]->x / 2] != '1' && maze[enemys[i]->y + 1][enemys[i]->x / 2] != '5') enemys[i]->y++; 
-					   else { i--;  continue; }
-				 	break;												  
-				 case 4: if (maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '5') enemys[i]->x -= 2;
-					   else { i--;   continue; }
-				 	break;
-				 }
+				// 벽에 닿아야만 방향전환을 하는 코드
+				//	{
+				//		// 벽에 도달할 때 까지 방향전환 X
+				//		if (enemysDir[i] == 0)
+				//		{
+				//			randomDir = rand() % 4 + 1;
+				//			enemysDir[i] = randomDir;
+				//		}
+				//	
+				//		// 랜덤으로 움직이기
+				//		switch (enemysDir[i])
+				//		{
+				//		case 1: if (maze[enemys[i]->y - 1][enemys[i]->x / 2] != '1' && maze[enemys[i]->y - 1][enemys[i]->x / 2] != '5' && maze[enemys[i]->y - 1][enemys[i]->x / 2] != '7'
+				//			&& maze[enemys[i]->y - 1][enemys[i]->x / 2] != '9') enemys[i]->y--;
+				//			  else { enemysDir[i] = 0; i--;  continue; }
+				//			  break;
+				//		case 2:if (maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '5'
+				//			&& maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '6' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '8') enemys[i]->x += 2;
+				//			  else { enemysDir[i] = 0; i--;   continue; }
+				//			  break;
+				//		case 3:if (maze[enemys[i]->y + 1][enemys[i]->x / 2] != '1' && maze[enemys[i]->y + 1][enemys[i]->x / 2] != '5'
+				//			&& maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '6' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '8') enemys[i]->y++;
+				//			  else { enemysDir[i] = 0; i--;  continue; }
+				//			  break;
+				//		case 4: if (maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '5'
+				//			&& maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '6' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '8') enemys[i]->x -= 2;
+				//			  else { enemysDir[i] = 0; i--;    continue; }
+				//			  break;
+				//		}
+				//	}
+				{
+						randomDir = rand() % 4 + 1;
+					// 랜덤으로 움직이기
+					switch (randomDir)
+					{
+					case 1: if (maze[enemys[i]->y - 1][enemys[i]->x / 2] != '1' && maze[enemys[i]->y - 1][enemys[i]->x / 2] != '5' && maze[enemys[i]->y - 1][enemys[i]->x / 2] != '7'
+						&& maze[enemys[i]->y - 1][enemys[i]->x / 2] != '9') enemys[i]->y--;
+						  else {  i--;  continue; }
+						  break;
+					case 2:if (maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '5'
+						&& maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '6' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '8') enemys[i]->x += 2;
+						  else {  i--;   continue; }
+						  break;
+					case 3:if (maze[enemys[i]->y + 1][enemys[i]->x / 2] != '1' && maze[enemys[i]->y + 1][enemys[i]->x / 2] != '5'
+						&& maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '6' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '8') enemys[i]->y++;
+						  else {  i--;  continue; }
+						  break;
+					case 4: if (maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '5'
+						&& maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '6' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '8') enemys[i]->x -= 2;
+						  else { i--;    continue; }
+						  break;
+					}
+				}
+
 			}
 
 		}
@@ -340,7 +379,7 @@ void main()
 			}
 			// 아이템을 먹었을 때
 			{
-				
+
 				if (maze[character.y][character.x / 2] == '3' && isInsPower)
 				{
 					maze[character.y][character.x / 2] = '0';
@@ -357,10 +396,10 @@ void main()
 			}
 			else
 			{
-				isPowerUp = false; 
+				isPowerUp = false;
 				if (tempGameSpeed != 0)
 				{
-				gameSpeed = tempGameSpeed;
+					gameSpeed = tempGameSpeed;
 
 				}
 			}
@@ -492,7 +531,7 @@ void main()
 					// 통로 생성 (매개변수: 테레포드 통로 순서)
 					InsTelpo(0);
 				}
-				
+
 				if (!isInsMonster2)
 				{
 					isInsMonster2 = true;
@@ -527,19 +566,20 @@ void main()
 					// 몬스터 추가 생성
 					InsMonster(1);
 				}
-			} 
+			}
 			// 게임 초기상황
 			else {
 				nextString = "몬스터 추가";
 				nextcoins = 25;
 			}
 		}
-		
+
 		// 맵 삭제이후 재생성
 		{
-			 system("cls");
-			 Render();
-			 UIManager();
+			system("cls");
+			Render();
+			UIManager();
+
 		}
 
 		// 순차대로 위치 구하고 출력하기
@@ -559,7 +599,7 @@ void main()
 			Position(character.x, character.y);
 			printf("%s", character.shape);
 		}
-		
+
 		Sleep(gameSpeed);
 
 	}
