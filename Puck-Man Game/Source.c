@@ -12,6 +12,8 @@
 #define RIGHT 77
 #define DOWN 80
 
+#define BUFFERSIZE 10000
+
 bool isInsMonster1 = false; // 몬스터1 추가생성 확인
 bool isInsMonster2 = false; // 몬스터2 추가생성 확인
 bool isInsMonster3 = false; // 몬스터3 추가생성 확인
@@ -41,6 +43,10 @@ int enemysDir[4] = { 0,0,0,0 }; // 적의 이동 방향을 저장
 bool enemysFind[4] = { false,false,false,false }; // 적의 플레이어 찾음의 유무
 
 int powerTime = 0;
+
+void textcolor(int colorNum) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colorNum);
+}
 
 typedef struct Character
 {
@@ -112,30 +118,40 @@ void Render()
 	{
 		for (int j = 0; j < WIDTH; j++)
 		{
-
+			textcolor(7);
 			switch (maze[i][j])
 			{
 				// 아무것도 없음
 			case '0': printf("  "); break;
 				// 아무도 나가지 못하는 벽
-			case '1': printf("■"); break;
+			case '1':if (isPowerUp) { textcolor(4); }
+					else if (isChangeExit)
+			{
+				textcolor(4);
+			}
+					else { textcolor(1); } printf("■"); break;
 				// 플레이어가 먹어야할 코인
-			case '2': printf("ㆍ");  break;
+			case '2':			textcolor(6);
+				printf("ㆍ");  break;
 				// 플레이어가 먹으면 강화되는 아이템
 			case '3': if (!isInsPower) { printf("  "); }
-					else { printf("⊙"); } break;
+					else {
+				textcolor(11);
+				printf("⊙"); } break;
 				// 생성되는 출구
-			case'4': printf("★"); break;
+			case'4': textcolor(14); printf("★"); break;
 				// 적 기지의 입구
 			case '5': printf("□"); break;
 				// 닫힌 통로1 &  열린 통로2
-			case '6':  printf("◆");
+			case '6':  textcolor(1); printf("◆");
 				break;
 				// 닫힌 통로2 & 열린 통로2
-			case '7':  printf("◆");
+			case '7': textcolor(1); printf("◆");
 				break;
-			case '8': printf("♤"); break;
-			case '9': printf("♡"); break;
+			case '8': 			textcolor(2);
+				printf("♤"); break;
+			case '9':			textcolor(4);
+				printf("♡"); break;
 			}
 		}
 		printf("\n");
@@ -240,6 +256,7 @@ void  ChangeExit()
 // UI를 관리하는 함수
 void UIManager()
 {
+	textcolor(7);
 	// 목표 설정 & 미션 결과
 	printf("코인 미션:%d / %d --> %s  \n", coins, nextcoins, nextString);
 	printf("\n");
@@ -265,6 +282,13 @@ void main()
 	char key = 0;
 	// 방향 (시계방향으로 12시부터 1,2,3,4)
 	int dir = 0;
+
+	MoveWindow(GetConsoleWindow(), 750, 200, 410, 600, true); // x, y, 너비, 높이순
+
+	FILE* file = fopen("GameOver.txt", "r");
+	char buffer[BUFFERSIZE] = { 0, };
+
+	fread(buffer, 1, BUFFERSIZE, file);
 
 	Render();
 	UIManager();
@@ -348,19 +372,19 @@ void main()
 					switch (randomDir)
 					{
 					case 1: if (maze[enemys[i]->y - 1][enemys[i]->x / 2] != '1' && maze[enemys[i]->y - 1][enemys[i]->x / 2] != '5' && maze[enemys[i]->y - 1][enemys[i]->x / 2] != '7'
-						&& maze[enemys[i]->y - 1][enemys[i]->x / 2] != '9') enemys[i]->y--;
+						&& maze[enemys[i]->y - 1][enemys[i]->x / 2] != '9' && maze[enemys[i]->y - 1][enemys[i]->x / 2] != '4') enemys[i]->y--;
 						  else {  i--;  continue; }
 						  break;
 					case 2:if (maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '5'
-						&& maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '6' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '8') enemys[i]->x += 2;
+						&& maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '6' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '8' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '4') enemys[i]->x += 2;
 						  else {  i--;   continue; }
 						  break;
 					case 3:if (maze[enemys[i]->y + 1][enemys[i]->x / 2] != '1' && maze[enemys[i]->y + 1][enemys[i]->x / 2] != '5'
-						&& maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '6' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '8') enemys[i]->y++;
+						&& maze[enemys[i]->y + 1][enemys[i]->x / 2 ] != '7' && maze[enemys[i]->y + 1][enemys[i]->x / 2 ] != '9' && maze[enemys[i]->y + 1][enemys[i]->x / 2] != '4') enemys[i]->y++;
 						  else {  i--;  continue; }
 						  break;
 					case 4: if (maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '1' && maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '5'
-						&& maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '6' && maze[enemys[i]->y][enemys[i]->x / 2 + 1] != '8') enemys[i]->x -= 2;
+						&& maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '6' && maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '8' && maze[enemys[i]->y][enemys[i]->x / 2 - 1] != '4') enemys[i]->x -= 2;
 						  else { i--;    continue; }
 						  break;
 					}
@@ -584,18 +608,49 @@ void main()
 
 		// 순차대로 위치 구하고 출력하기
 		{
+			if (isPowerUp)
+			{
+				textcolor(14);
+				Position(enemy1.x, enemy1.y);
+				printf("%s", enemy1.shape);
+
+				Position(enemy2.x, enemy2.y);
+				printf("%s", enemy2.shape);
+
+				Position(enemy3.x, enemy3.y);
+				printf("%s", enemy3.shape);
+
+				Position(enemy4.x, enemy4.y);
+				printf("%s", enemy4.shape);
+			}
+			else
+			{
+			textcolor(12);
 			Position(enemy1.x, enemy1.y);
 			printf("%s", enemy1.shape);
 
+			textcolor(10);
 			Position(enemy2.x, enemy2.y);
 			printf("%s", enemy2.shape);
+			textcolor(11);
 
 			Position(enemy3.x, enemy3.y);
 			printf("%s", enemy3.shape);
+			textcolor(13);
 
 			Position(enemy4.x, enemy4.y);
 			printf("%s", enemy4.shape);
+			}
+			
 
+			if (isPowerUp)
+			{
+				textcolor(15);
+			}
+			else
+			{
+				textcolor(14);
+			}
 			Position(character.x, character.y);
 			printf("%s", character.shape);
 		}
@@ -606,7 +661,7 @@ void main()
 	system("cls");
 	if (isGameOver)
 	{
-		printf("GameOver");
+		printf("%s", buffer);
 	}
 	else if (isGameClear)
 	{
