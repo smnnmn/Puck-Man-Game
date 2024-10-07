@@ -44,9 +44,7 @@ bool enemysFind[4] = { false,false,false,false }; // 적의 플레이어 찾음의 유무
 
 int powerTime = 0;
 
-void textcolor(int colorNum) {
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colorNum);
-}
+
 
 typedef struct Character
 {
@@ -77,6 +75,9 @@ int tempGameSpeed = 0; // 게임 플레이 속도 저장용
 const char* nextString = ""; // 다음 진행 상황
 const char* beforeString = ""; // 이전 목표 상황 
 
+void textcolor(int colorNum) {
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colorNum);
+}
 
 void Position(int x, int y)
 {
@@ -285,10 +286,13 @@ void main()
 
 	MoveWindow(GetConsoleWindow(), 750, 200, 410, 600, true); // x, y, 너비, 높이순
 
-	FILE* file = fopen("GameOver.txt", "r");
-	char buffer[BUFFERSIZE] = { 0, };
+	FILE* fileOver = fopen("GameOver.txt", "r");
+	char bufferOver[BUFFERSIZE] = { 0, };
+	
+	fread(bufferOver, 1, BUFFERSIZE, fileOver);
 
-	fread(buffer, 1, BUFFERSIZE, file);
+
+	
 
 	Render();
 	UIManager();
@@ -661,11 +665,25 @@ void main()
 	system("cls");
 	if (isGameOver)
 	{
-		printf("%s", buffer);
+		MoveWindow(GetConsoleWindow(), 150, 200, 1700, 700, true); // x, y, 너비, 높이순
+
+	
+		textcolor(7);
+		printf("%s", bufferOver);
+		system("pause");
 	}
 	else if (isGameClear)
 	{
-		printf("Game Clear!");
+		MoveWindow(GetConsoleWindow(), 150, 200, 1700, 700, true); // x, y, 너비, 높이순
+
+		FILE* fileClear = fopen("GameClear.txt", "r");
+		char bufferClear[BUFFERSIZE] = { 0, };
+		
+		fread(bufferClear, 1, BUFFERSIZE, fileClear);
+		
+		textcolor(7);
+		printf("%s", bufferClear);
+		system("pause");
 	}
 	return 0;
 }
